@@ -44,7 +44,12 @@ function RegisterPage() {
       toast.error("Username must be 3-32 letters, numbers or underscores.");
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim())) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
     setBusy(true);
+
     try {
       const hash = await hashSequence(username, sequence);
       const result = await register({

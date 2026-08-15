@@ -17,18 +17,30 @@ function synth(username: string) {
 }
 
 export const registerAccount = createServerFn({ method: "POST" })
-  .inputValidator((input: { username: string; email: string; hash: string }) =>
-    z
+  .inputValidator((input: { username: string; email: string; hash: string }) => input)
+  .handler(async ({ data }) => {
+    const parsed = z
       .object({
         username: usernameSchema,
         email: z.string().trim().email().max(255),
         hash: hashSchema,
       })
-      .parse(input),
-  )
-  .handler(async ({ data }) => {
+      .safeParse(data);
+    if (!parsed.success) {
+      const bad = parsed.error.issues[0]?.path[0];
+      return {
+        ok: false as const,
+        error:
+          bad === "email"
+            ? "Please enter a valid email address."
+            : bad === "username"
+              ? "Username must be 3-32 letters, numbers or underscores."
+              : "Please pick your picture sequence again.",
+      };
+    }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const username = data.username.trim().toLowerCase();
+    const username = parsed.data.username.trim().toLowerCase();
+
 
     const { data: existing } = await supabaseAdmin
       .from("profiles")
@@ -39,7 +51,7 @@ export const registerAccount = createServerFn({ method: "POST" })
 
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
       email: synth(username),
-      password: data.hash,
+      password: parsed.data.hash,
       email_confirm: true,
     });
     if (error || !created.user) {
@@ -49,8 +61,9 @@ export const registerAccount = createServerFn({ method: "POST" })
     const { error: profileError } = await supabaseAdmin.from("profiles").insert({
       id: created.user.id,
       username,
-      email: data.email.trim().toLowerCase(),
+      email: parsed.data.email.trim().toLowerCase(),
     });
+
     if (profileError) {
       await supabaseAdmin.auth.admin.deleteUser(created.user.id);
       return { ok: false as const, error: "Could not save the profile. Please try again." };
