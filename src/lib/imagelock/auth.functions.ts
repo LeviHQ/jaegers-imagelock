@@ -1,20 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const MAX_ATTEMPTS = 3;
-const LOCK_SECONDS = 60;
-
-const usernameSchema = z
-  .string()
-  .trim()
-  .min(3)
-  .max(32)
-  .regex(/^[a-zA-Z0-9_]+$/);
-const hashSchema = z.string().regex(/^[a-f0-9]{64}$/);
-
-function synth(username: string) {
-  return `${username.trim().toLowerCase()}@users.imagelock.app`;
-}
+import {
+  hashSchema,
+  LOCK_SECONDS,
+  MAX_ATTEMPTS,
+  syntheticAuthEmail,
+  usernameSchema,
+} from "@/lib/imagelock/auth.shared";
 
 export const registerAccount = createServerFn({ method: "POST" })
   .inputValidator((input: { username: string; email: string; hash: string }) => input)
@@ -38,37 +31,51 @@ export const registerAccount = createServerFn({ method: "POST" })
               : "Please pick your picture sequence again.",
       };
     }
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const username = parsed.data.username.trim().toLowerCase();
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const username = parsed.data.username.trim().toLowerCase();
+      const { data: existing, error: lookupError } = await supabaseAdmin
+        .from("profiles")
+        .select("id")
+        .eq("username", username)
+        .maybeSingle();
+      if (lookupError) {
+        console.error("Registration username lookup failed", lookupError);
+        return { ok: false as const, error: "Account service is unavailable. Please try again." };
+      }
+      if (existing) return { ok: false as const, error: "That username is already taken." };
 
+      const { data: created, error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email: syntheticAuthEmail(username),
+        password: parsed.data.hash,
+        email_confirm: true,
+      });
+      if (createError || !created.user) {
+        console.error("Registration auth user creation failed", createError);
+        const duplicate = createError?.message.toLowerCase().includes("already");
+        return {
+          ok: false as const,
+          error: duplicate
+            ? "That username is already taken."
+            : "Could not create the account. Please try again.",
+        };
+      }
 
-    const { data: existing } = await supabaseAdmin
-      .from("profiles")
-      .select("id")
-      .eq("username", username)
-      .maybeSingle();
-    if (existing) return { ok: false as const, error: "That username is already taken." };
-
-    const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
-      email: synth(username),
-      password: parsed.data.hash,
-      email_confirm: true,
-    });
-    if (error || !created.user) {
-      return { ok: false as const, error: "Could not create the account. Try another username." };
+      const { error: profileError } = await supabaseAdmin.from("profiles").insert({
+        id: created.user.id,
+        username,
+        email: parsed.data.email.trim().toLowerCase(),
+      });
+      if (profileError) {
+        console.error("Registration profile creation failed", profileError);
+        await supabaseAdmin.auth.admin.deleteUser(created.user.id);
+        return { ok: false as const, error: "Could not save the profile. Please try again." };
+      }
+      return { ok: true as const };
+    } catch (error) {
+      console.error("Registration failed unexpectedly", error);
+      return { ok: false as const, error: "Account service is unavailable. Please try again." };
     }
-
-    const { error: profileError } = await supabaseAdmin.from("profiles").insert({
-      id: created.user.id,
-      username,
-      email: parsed.data.email.trim().toLowerCase(),
-    });
-
-    if (profileError) {
-      await supabaseAdmin.auth.admin.deleteUser(created.user.id);
-      return { ok: false as const, error: "Could not save the profile. Please try again." };
-    }
-    return { ok: true as const };
   });
 
 export const getLockState = createServerFn({ method: "POST" })
