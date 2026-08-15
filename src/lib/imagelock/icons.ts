@@ -5,70 +5,126 @@ import {
   House, Bed, Lamp, Sofa, DoorOpen, Key, Clock, Scissors, Hammer, Wrench,
   Sun, Moon, Cloud, Star, Trees, Flower, Leaf, Mountain, Snowflake, Umbrella,
   Heart, Phone, Book, Camera, Music, Gift, Anchor, Crown,
+  PawPrint, Salad, CarFront, Sofa as SofaIcon, TreePine, Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
-export type IconItem = { id: string; label: string; Icon: LucideIcon };
+export type CategoryId =
+  | "animals"
+  | "food"
+  | "transport"
+  | "home"
+  | "nature"
+  | "things";
+
+export type IconItem = {
+  id: string;
+  label: string;
+  Icon: LucideIcon;
+  category: CategoryId;
+  /** CSS variable name holding the icon colour token */
+  color: string;
+};
+
+export type Category = {
+  id: CategoryId;
+  label: string;
+  Icon: LucideIcon;
+  color: string;
+};
+
+export const CATEGORIES: Category[] = [
+  { id: "animals", label: "Animals", Icon: PawPrint, color: "var(--icon-animals)" },
+  { id: "food", label: "Food", Icon: Salad, color: "var(--icon-food)" },
+  { id: "transport", label: "Vehicles", Icon: CarFront, color: "var(--icon-transport)" },
+  { id: "home", label: "Home & Tools", Icon: SofaIcon, color: "var(--icon-home)" },
+  { id: "nature", label: "Nature", Icon: TreePine, color: "var(--icon-nature)" },
+  { id: "things", label: "Fun Things", Icon: Sparkles, color: "var(--icon-things)" },
+];
+
+export const CATEGORY_MAP: Record<CategoryId, Category> = Object.fromEntries(
+  CATEGORIES.map((c) => [c.id, c]),
+) as Record<CategoryId, Category>;
+
+function make(
+  category: CategoryId,
+  items: Array<[string, string, LucideIcon]>,
+): IconItem[] {
+  const color = CATEGORY_MAP[category].color;
+  return items.map(([id, label, Icon]) => ({ id, label, Icon, category, color }));
+}
 
 export const ICONS: IconItem[] = [
-  { id: "cat", label: "Cat", Icon: Cat },
-  { id: "dog", label: "Dog", Icon: Dog },
-  { id: "bird", label: "Bird", Icon: Bird },
-  { id: "fish", label: "Fish", Icon: Fish },
-  { id: "rabbit", label: "Rabbit", Icon: Rabbit },
-  { id: "squirrel", label: "Squirrel", Icon: Squirrel },
-  { id: "snail", label: "Snail", Icon: Snail },
-  { id: "bug", label: "Bug", Icon: Bug },
-  { id: "turtle", label: "Turtle", Icon: Turtle },
-  { id: "rat", label: "Mouse", Icon: Rat },
-  { id: "apple", label: "Apple", Icon: Apple },
-  { id: "banana", label: "Banana", Icon: Banana },
-  { id: "cherry", label: "Cherry", Icon: Cherry },
-  { id: "grape", label: "Grapes", Icon: Grape },
-  { id: "carrot", label: "Carrot", Icon: Carrot },
-  { id: "citrus", label: "Orange", Icon: Citrus },
-  { id: "croissant", label: "Bread", Icon: Croissant },
-  { id: "icecream", label: "Ice cream", Icon: IceCream },
-  { id: "pizza", label: "Pizza", Icon: Pizza },
-  { id: "egg", label: "Egg", Icon: Egg },
-  { id: "car", label: "Car", Icon: Car },
-  { id: "bus", label: "Bus", Icon: Bus },
-  { id: "bike", label: "Bicycle", Icon: Bike },
-  { id: "plane", label: "Plane", Icon: Plane },
-  { id: "ship", label: "Ship", Icon: Ship },
-  { id: "train", label: "Train", Icon: Train },
-  { id: "truck", label: "Truck", Icon: Truck },
-  { id: "rocket", label: "Rocket", Icon: Rocket },
-  { id: "sailboat", label: "Boat", Icon: Sailboat },
-  { id: "tractor", label: "Tractor", Icon: Tractor },
-  { id: "house", label: "House", Icon: House },
-  { id: "bed", label: "Bed", Icon: Bed },
-  { id: "lamp", label: "Lamp", Icon: Lamp },
-  { id: "sofa", label: "Sofa", Icon: Sofa },
-  { id: "door", label: "Door", Icon: DoorOpen },
-  { id: "key", label: "Key", Icon: Key },
-  { id: "clock", label: "Clock", Icon: Clock },
-  { id: "scissors", label: "Scissors", Icon: Scissors },
-  { id: "hammer", label: "Hammer", Icon: Hammer },
-  { id: "wrench", label: "Wrench", Icon: Wrench },
-  { id: "sun", label: "Sun", Icon: Sun },
-  { id: "moon", label: "Moon", Icon: Moon },
-  { id: "cloud", label: "Cloud", Icon: Cloud },
-  { id: "star", label: "Star", Icon: Star },
-  { id: "tree", label: "Tree", Icon: Trees },
-  { id: "flower", label: "Flower", Icon: Flower },
-  { id: "leaf", label: "Leaf", Icon: Leaf },
-  { id: "mountain", label: "Mountain", Icon: Mountain },
-  { id: "snow", label: "Snow", Icon: Snowflake },
-  { id: "umbrella", label: "Umbrella", Icon: Umbrella },
-  { id: "heart", label: "Heart", Icon: Heart },
-  { id: "phone", label: "Phone", Icon: Phone },
-  { id: "book", label: "Book", Icon: Book },
-  { id: "camera", label: "Camera", Icon: Camera },
-  { id: "music", label: "Music", Icon: Music },
-  { id: "gift", label: "Gift", Icon: Gift },
-  { id: "anchor", label: "Anchor", Icon: Anchor },
-  { id: "crown", label: "Crown", Icon: Crown },
+  ...make("animals", [
+    ["cat", "Cat", Cat],
+    ["dog", "Dog", Dog],
+    ["bird", "Bird", Bird],
+    ["fish", "Fish", Fish],
+    ["rabbit", "Rabbit", Rabbit],
+    ["squirrel", "Squirrel", Squirrel],
+    ["snail", "Snail", Snail],
+    ["bug", "Bug", Bug],
+    ["turtle", "Turtle", Turtle],
+    ["rat", "Mouse", Rat],
+  ]),
+  ...make("food", [
+    ["apple", "Apple", Apple],
+    ["banana", "Banana", Banana],
+    ["cherry", "Cherry", Cherry],
+    ["grape", "Grapes", Grape],
+    ["carrot", "Carrot", Carrot],
+    ["citrus", "Orange", Citrus],
+    ["croissant", "Bread", Croissant],
+    ["icecream", "Ice cream", IceCream],
+    ["pizza", "Pizza", Pizza],
+    ["egg", "Egg", Egg],
+  ]),
+  ...make("transport", [
+    ["car", "Car", Car],
+    ["bus", "Bus", Bus],
+    ["bike", "Bicycle", Bike],
+    ["plane", "Plane", Plane],
+    ["ship", "Ship", Ship],
+    ["train", "Train", Train],
+    ["truck", "Truck", Truck],
+    ["rocket", "Rocket", Rocket],
+    ["sailboat", "Boat", Sailboat],
+    ["tractor", "Tractor", Tractor],
+  ]),
+  ...make("home", [
+    ["house", "House", House],
+    ["bed", "Bed", Bed],
+    ["lamp", "Lamp", Lamp],
+    ["sofa", "Sofa", Sofa],
+    ["door", "Door", DoorOpen],
+    ["key", "Key", Key],
+    ["clock", "Clock", Clock],
+    ["scissors", "Scissors", Scissors],
+    ["hammer", "Hammer", Hammer],
+    ["wrench", "Wrench", Wrench],
+  ]),
+  ...make("nature", [
+    ["sun", "Sun", Sun],
+    ["moon", "Moon", Moon],
+    ["cloud", "Cloud", Cloud],
+    ["star", "Star", Star],
+    ["tree", "Tree", Trees],
+    ["flower", "Flower", Flower],
+    ["leaf", "Leaf", Leaf],
+    ["mountain", "Mountain", Mountain],
+    ["snow", "Snow", Snowflake],
+    ["umbrella", "Umbrella", Umbrella],
+  ]),
+  ...make("things", [
+    ["heart", "Heart", Heart],
+    ["phone", "Phone", Phone],
+    ["book", "Book", Book],
+    ["camera", "Camera", Camera],
+    ["music", "Music", Music],
+    ["gift", "Gift", Gift],
+    ["anchor", "Anchor", Anchor],
+    ["crown", "Crown", Crown],
+  ]),
 ];
 
 export const ICON_MAP: Record<string, IconItem> = Object.fromEntries(

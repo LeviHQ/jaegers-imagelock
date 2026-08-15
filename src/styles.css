@@ -59,7 +59,14 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-icon-animals: var(--icon-animals);
+  --color-icon-food: var(--icon-food);
+  --color-icon-transport: var(--icon-transport);
+  --color-icon-home: var(--icon-home);
+  --color-icon-nature: var(--icon-nature);
+  --color-icon-things: var(--icon-things);
 }
+
 
 :root {
   --radius: 0.9rem;
@@ -96,7 +103,15 @@
   --sidebar-accent-foreground: oklch(0.34 0.05 150);
   --sidebar-border: oklch(0.9 0.022 95);
   --sidebar-ring: oklch(0.68 0.085 250);
+  /* Pastel icon category colours */
+  --icon-animals: oklch(0.62 0.11 30);
+  --icon-food: oklch(0.66 0.13 60);
+  --icon-transport: oklch(0.62 0.1 250);
+  --icon-home: oklch(0.6 0.08 300);
+  --icon-nature: oklch(0.58 0.1 150);
+  --icon-things: oklch(0.63 0.12 350);
 }
+
 
 
 
@@ -133,6 +148,13 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --icon-animals: oklch(0.78 0.11 30);
+  --icon-food: oklch(0.82 0.13 60);
+  --icon-transport: oklch(0.78 0.1 250);
+  --icon-home: oklch(0.76 0.09 300);
+  --icon-nature: oklch(0.76 0.11 150);
+  --icon-things: oklch(0.79 0.12 350);
+
 }
 
 @layer base {
