@@ -1,3 +1,16 @@
+# Jaegers-ImageLock 🔒
+
+**A secure, accessible, password-less authentication system**
+
+Built for the **Omnikon National Hackathon 2026**
+Problem Statement: `Omni_CyberTech_20` — Accessible Password-less Authentication
+
+### Team Jaegers
+- **Deepanshi** — Team Leader
+- **Adarsh Mishra** — Team Member
+
+---
+
 # ImageGuard Login
 
 Build a web app called "Jaegers-ImageLock" — a secure, password-less authentication 
