@@ -7,9 +7,8 @@ import { IconGrid } from "@/components/imagelock/IconGrid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { hashSequence } from "@/lib/imagelock/hash";
-
-type RegistrationResult = { ok: boolean; error?: string };
+import { supabase } from "@/integrations/supabase/client";
+import { hashSequence, syntheticEmail } from "@/lib/imagelock/hash";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -50,17 +49,34 @@ function RegisterPage() {
     setBusy(true);
 
     try {
-      const hash = await hashSequence(username, sequence);
-      const response = await fetch("/api/public/register", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ username: username.trim(), email: email.trim(), hash }),
+      const normalizedUsername = username.trim().toLowerCase();
+      const recoveryEmail = email.trim().toLowerCase();
+      const hash = await hashSequence(normalizedUsername, sequence);
+      const { error } = await supabase.auth.signUp({
+        email: syntheticEmail(normalizedUsername),
+        password: hash,
+        options: {
+          data: {
+            username: normalizedUsername,
+            recovery_email: recoveryEmail,
+          },
+        },
       });
-      const result = (await response.json()) as RegistrationResult;
-      if (!result.ok) {
-        toast.error(result.error ?? "Could not create the account. Please try again.");
+
+      if (error) {
+        const duplicate =
+          error.message.toLowerCase().includes("already") ||
+          error.message.toLowerCase().includes("registered") ||
+          error.message.toLowerCase().includes("database error");
+        toast.error(
+          duplicate
+            ? "That username is already taken."
+            : "Could not create the account. Please try again.",
+        );
         return;
       }
+
+      await supabase.auth.signOut();
       toast.success("Account created. Now log in with your pictures.");
       navigate({ to: "/" });
     } catch {
