@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { UserPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -8,8 +7,9 @@ import { IconGrid } from "@/components/imagelock/IconGrid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { registerAccount } from "@/lib/imagelock/auth.functions";
 import { hashSequence } from "@/lib/imagelock/hash";
+
+type RegistrationResult = { ok: boolean; error?: string };
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -32,7 +32,6 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const register = useServerFn(registerAccount);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [sequence, setSequence] = useState<string[]>([]);
@@ -52,11 +51,14 @@ function RegisterPage() {
 
     try {
       const hash = await hashSequence(username, sequence);
-      const result = await register({
-        data: { username: username.trim(), email: email.trim(), hash },
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ username: username.trim(), email: email.trim(), hash }),
       });
+      const result = (await response.json()) as RegistrationResult;
       if (!result.ok) {
-        toast.error(result.error);
+        toast.error(result.error ?? "Could not create the account. Please try again.");
         return;
       }
       toast.success("Account created. Now log in with your pictures.");
