@@ -51,7 +51,7 @@ function RegisterPage() {
 
     try {
       const hash = await hashSequence(username, sequence);
-      const response = await fetch("/api/register", {
+      const response = await fetch("/api/public/register", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ username: username.trim(), email: email.trim(), hash }),
