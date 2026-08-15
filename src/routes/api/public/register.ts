@@ -13,7 +13,7 @@ const registrationSchema = z.object({
   hash: hashSchema,
 });
 
-export const Route = createFileRoute("/api/register")({
+export const Route = createFileRoute("/api/public/register")({
   server: {
     handlers: {
       POST: async ({ request }) => {
