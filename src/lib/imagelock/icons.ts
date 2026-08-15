@@ -3,7 +3,7 @@ import {
   Apple, Banana, Cherry, Grape, Carrot, Citrus, Croissant, IceCream, Pizza, Egg,
   Car, Bus, Bike, Plane, Ship, Train, Truck, Rocket, Sailboat, Tractor,
   House, Bed, Lamp, Sofa, DoorOpen, Key, Clock, Scissors, Hammer, Wrench,
-  Sun, Moon, Cloud, Star, Tree, Flower, Leaf, Mountain, Snowflake, Umbrella,
+  Sun, Moon, Cloud, Star, Trees, Flower, Leaf, Mountain, Snowflake, Umbrella,
   Heart, Phone, Book, Camera, Music, Gift, Anchor, Crown,
   type LucideIcon,
 } from "lucide-react";
@@ -55,7 +55,7 @@ export const ICONS: IconItem[] = [
   { id: "moon", label: "Moon", Icon: Moon },
   { id: "cloud", label: "Cloud", Icon: Cloud },
   { id: "star", label: "Star", Icon: Star },
-  { id: "tree", label: "Tree", Icon: Tree },
+  { id: "tree", label: "Tree", Icon: Trees },
   { id: "flower", label: "Flower", Icon: Flower },
   { id: "leaf", label: "Leaf", Icon: Leaf },
   { id: "mountain", label: "Mountain", Icon: Mountain },
