@@ -51,7 +51,7 @@ export const registerAccount = createServerFn({ method: "POST" })
 
     const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
       email: synth(username),
-      password: data.hash,
+      password: parsed.data.hash,
       email_confirm: true,
     });
     if (error || !created.user) {
@@ -61,8 +61,9 @@ export const registerAccount = createServerFn({ method: "POST" })
     const { error: profileError } = await supabaseAdmin.from("profiles").insert({
       id: created.user.id,
       username,
-      email: data.email.trim().toLowerCase(),
+      email: parsed.data.email.trim().toLowerCase(),
     });
+
     if (profileError) {
       await supabaseAdmin.auth.admin.deleteUser(created.user.id);
       return { ok: false as const, error: "Could not save the profile. Please try again." };
