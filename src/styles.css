@@ -148,6 +148,13 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --icon-animals: oklch(0.78 0.11 30);
+  --icon-food: oklch(0.82 0.13 60);
+  --icon-transport: oklch(0.78 0.1 250);
+  --icon-home: oklch(0.76 0.09 300);
+  --icon-nature: oklch(0.76 0.11 150);
+  --icon-things: oklch(0.79 0.12 350);
+
 }
 
 @layer base {
