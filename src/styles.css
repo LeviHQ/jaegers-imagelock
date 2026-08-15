@@ -70,90 +70,90 @@
 
 :root {
   --radius: 0.9rem;
-  /* Pastel cream base with dusty blue, sage green and soft gold accents */
-  --background: oklch(0.975 0.014 88);
-  --foreground: oklch(0.32 0.035 250);
-  --card: oklch(0.99 0.01 90);
-  --card-foreground: oklch(0.32 0.035 250);
-  --popover: oklch(0.99 0.01 90);
-  --popover-foreground: oklch(0.32 0.035 250);
-  --primary: oklch(0.68 0.085 250);
+  /* Lavender + soft blue base with a hint of gold */
+  --background: oklch(0.97 0.012 290);
+  --foreground: oklch(0.3 0.04 260);
+  --card: oklch(0.99 0.01 295);
+  --card-foreground: oklch(0.3 0.04 260);
+  --popover: oklch(0.99 0.01 295);
+  --popover-foreground: oklch(0.3 0.04 260);
+  --primary: oklch(0.62 0.11 265);
   --primary-foreground: oklch(0.99 0.008 90);
-  --secondary: oklch(0.9 0.035 145);
-  --secondary-foreground: oklch(0.34 0.05 150);
-  --muted: oklch(0.945 0.018 90);
-  --muted-foreground: oklch(0.55 0.03 240);
-  --accent: oklch(0.87 0.08 90);
-  --accent-foreground: oklch(0.35 0.06 80);
-  --destructive: oklch(0.66 0.13 27);
+  --secondary: oklch(0.9 0.04 285);
+  --secondary-foreground: oklch(0.32 0.05 270);
+  --muted: oklch(0.93 0.018 295);
+  --muted-foreground: oklch(0.52 0.03 260);
+  --accent: oklch(0.86 0.13 85);
+  --accent-foreground: oklch(0.32 0.06 80);
+  --destructive: oklch(0.64 0.14 25);
   --destructive-foreground: oklch(0.99 0.008 90);
-  --border: oklch(0.9 0.022 95);
-  --input: oklch(0.9 0.022 95);
-  --ring: oklch(0.68 0.085 250);
-  --chart-1: oklch(0.68 0.085 250);
-  --chart-2: oklch(0.75 0.06 150);
-  --chart-3: oklch(0.82 0.1 88);
-  --chart-4: oklch(0.8 0.05 30);
-  --chart-5: oklch(0.7 0.06 300);
-  --sidebar: oklch(0.96 0.016 90);
-  --sidebar-foreground: oklch(0.32 0.035 250);
-  --sidebar-primary: oklch(0.68 0.085 250);
+  --border: oklch(0.88 0.025 300);
+  --input: oklch(0.88 0.025 300);
+  --ring: oklch(0.62 0.11 265);
+  --chart-1: oklch(0.62 0.11 265);
+  --chart-2: oklch(0.72 0.09 290);
+  --chart-3: oklch(0.84 0.12 85);
+  --chart-4: oklch(0.58 0.1 230);
+  --chart-5: oklch(0.7 0.08 310);
+  --sidebar: oklch(0.95 0.016 295);
+  --sidebar-foreground: oklch(0.3 0.04 260);
+  --sidebar-primary: oklch(0.62 0.11 265);
   --sidebar-primary-foreground: oklch(0.99 0.008 90);
-  --sidebar-accent: oklch(0.9 0.035 145);
-  --sidebar-accent-foreground: oklch(0.34 0.05 150);
-  --sidebar-border: oklch(0.9 0.022 95);
-  --sidebar-ring: oklch(0.68 0.085 250);
-  /* Pastel icon category colours */
-  --icon-animals: oklch(0.62 0.11 30);
-  --icon-food: oklch(0.66 0.13 60);
-  --icon-transport: oklch(0.62 0.1 250);
-  --icon-home: oklch(0.6 0.08 300);
-  --icon-nature: oklch(0.58 0.1 150);
-  --icon-things: oklch(0.63 0.12 350);
+  --sidebar-accent: oklch(0.9 0.04 285);
+  --sidebar-accent-foreground: oklch(0.32 0.05 270);
+  --sidebar-border: oklch(0.88 0.025 300);
+  --sidebar-ring: oklch(0.62 0.11 265);
+  /* Icon category colours: lavender/blue/gold family */
+  --icon-animals: oklch(0.58 0.12 260);
+  --icon-food: oklch(0.65 0.13 85);
+  --icon-transport: oklch(0.6 0.11 230);
+  --icon-home: oklch(0.62 0.1 300);
+  --icon-nature: oklch(0.55 0.11 150);
+  --icon-things: oklch(0.66 0.12 280);
 }
 
 
 
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --background: oklch(0.18 0.04 275);
+  --foreground: oklch(0.97 0.01 290);
+  --card: oklch(0.24 0.035 280);
+  --card-foreground: oklch(0.97 0.01 290);
+  --popover: oklch(0.24 0.035 280);
+  --popover-foreground: oklch(0.97 0.01 290);
+  --primary: oklch(0.78 0.08 265);
+  --primary-foreground: oklch(0.18 0.04 275);
+  --secondary: oklch(0.3 0.04 285);
+  --secondary-foreground: oklch(0.97 0.01 290);
+  --muted: oklch(0.3 0.035 290);
+  --muted-foreground: oklch(0.74 0.03 280);
+  --accent: oklch(0.72 0.12 85);
+  --accent-foreground: oklch(0.18 0.05 80);
+  --destructive: oklch(0.7 0.18 25);
+  --destructive-foreground: oklch(0.97 0.01 290);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --ring: oklch(0.78 0.08 265);
+  --chart-1: oklch(0.78 0.08 265);
+  --chart-2: oklch(0.7 0.07 290);
+  --chart-3: oklch(0.72 0.12 85);
+  --chart-4: oklch(0.6 0.08 230);
+  --chart-5: oklch(0.68 0.07 310);
+  --sidebar: oklch(0.24 0.035 280);
+  --sidebar-foreground: oklch(0.97 0.01 290);
+  --sidebar-primary: oklch(0.78 0.08 265);
+  --sidebar-primary-foreground: oklch(0.18 0.04 275);
+  --sidebar-accent: oklch(0.3 0.04 285);
+  --sidebar-accent-foreground: oklch(0.97 0.01 290);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
-  --icon-animals: oklch(0.78 0.11 30);
-  --icon-food: oklch(0.82 0.13 60);
-  --icon-transport: oklch(0.78 0.1 250);
+  --sidebar-ring: oklch(0.78 0.08 265);
+  --icon-animals: oklch(0.74 0.11 260);
+  --icon-food: oklch(0.8 0.12 85);
+  --icon-transport: oklch(0.72 0.1 230);
   --icon-home: oklch(0.76 0.09 300);
-  --icon-nature: oklch(0.76 0.11 150);
-  --icon-things: oklch(0.79 0.12 350);
+  --icon-nature: oklch(0.7 0.1 150);
+  --icon-things: oklch(0.78 0.11 280);
 
 }
 
