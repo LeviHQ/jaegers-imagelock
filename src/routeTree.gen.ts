@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as ForgotRouteImport } from './routes/forgot'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as ApiRegisterRouteImport } from './routes/api/register'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,18 +40,25 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiRegisterRoute = ApiRegisterRouteImport.update({
+  id: '/api/register',
+  path: '/api/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/forgot': typeof ForgotRoute
   '/register': typeof RegisterRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/api/register': typeof ApiRegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forgot': typeof ForgotRoute
   '/register': typeof RegisterRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/api/register': typeof ApiRegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +67,13 @@ export interface FileRoutesById {
   '/forgot': typeof ForgotRoute
   '/register': typeof RegisterRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/api/register': typeof ApiRegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/forgot' | '/register' | '/home'
+  fullPaths: '/' | '/forgot' | '/register' | '/home' | '/api/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/forgot' | '/register' | '/home'
+  to: '/' | '/forgot' | '/register' | '/home' | '/api/register'
   id:
     | '__root__'
     | '/'
@@ -72,6 +81,7 @@ export interface FileRouteTypes {
     | '/forgot'
     | '/register'
     | '/_authenticated/home'
+    | '/api/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -79,6 +89,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ForgotRoute: typeof ForgotRoute
   RegisterRoute: typeof RegisterRoute
+  ApiRegisterRoute: typeof ApiRegisterRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -118,6 +129,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/register': {
+      id: '/api/register'
+      path: '/api/register'
+      fullPath: '/api/register'
+      preLoaderRoute: typeof ApiRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -137,6 +155,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ForgotRoute: ForgotRoute,
   RegisterRoute: RegisterRoute,
+  ApiRegisterRoute: ApiRegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
