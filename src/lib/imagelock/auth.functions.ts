@@ -17,18 +17,30 @@ function synth(username: string) {
 }
 
 export const registerAccount = createServerFn({ method: "POST" })
-  .inputValidator((input: { username: string; email: string; hash: string }) =>
-    z
+  .inputValidator((input: { username: string; email: string; hash: string }) => input)
+  .handler(async ({ data }) => {
+    const parsed = z
       .object({
         username: usernameSchema,
         email: z.string().trim().email().max(255),
         hash: hashSchema,
       })
-      .parse(input),
-  )
-  .handler(async ({ data }) => {
+      .safeParse(data);
+    if (!parsed.success) {
+      const bad = parsed.error.issues[0]?.path[0];
+      return {
+        ok: false as const,
+        error:
+          bad === "email"
+            ? "Please enter a valid email address."
+            : bad === "username"
+              ? "Username must be 3-32 letters, numbers or underscores."
+              : "Please pick your picture sequence again.",
+      };
+    }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const username = data.username.trim().toLowerCase();
+    const username = parsed.data.username.trim().toLowerCase();
+
 
     const { data: existing } = await supabaseAdmin
       .from("profiles")
