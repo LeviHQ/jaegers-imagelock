@@ -16,6 +16,7 @@ import {
 } from "@/lib/imagelock/icons";
 import { speak, stopSpeaking } from "@/lib/imagelock/speak";
 import { ICON_SIZES, useSettings } from "@/lib/imagelock/settings";
+import { sequenceStrength } from "@/lib/imagelock/strength";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -30,6 +31,22 @@ type Props = {
 };
 
 const HOLD_MS = 400;
+
+const STRENGTH_TEXT: Record<string, string> = {
+  muted: "text-muted-foreground",
+  weak: "text-destructive",
+  fair: "text-accent-foreground",
+  strong: "text-primary",
+  best: "text-primary",
+};
+
+const STRENGTH_BG: Record<string, string> = {
+  muted: "bg-muted-foreground/40",
+  weak: "bg-destructive",
+  fair: "bg-accent",
+  strong: "bg-primary",
+  best: "bg-primary",
+};
 
 function chunk(items: IconItem[], size: number) {
   const out: IconItem[][] = [];
@@ -112,6 +129,7 @@ export function IconGrid({
   const activeCategory = CATEGORIES.find((c) => c.id === category);
   const groupsUsed = sequenceCategories(sequence).length;
   const ruleError = enforceRules ? sequenceError(sequence) : null;
+  const strength = sequenceStrength(sequence);
 
   const hold = useHoldToSpeak();
 
