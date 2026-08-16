@@ -1,5 +1,5 @@
-import { ArrowLeft, Check, ChevronRight, Lock, Pencil, Search, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowLeft, Check, ChevronRight, Lock, Pencil, Search, Volume2, VolumeX, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import {
   type CategoryId,
   type IconItem,
 } from "@/lib/imagelock/icons";
+import { isNarrationOn, setNarration, speak, speechSupported, stopSpeaking } from "@/lib/imagelock/speak";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -28,12 +29,47 @@ type Props = {
 };
 
 const PAGE_SIZE = 16; // 4 columns x 4 rows
+const HOLD_MS = 400;
 
 function chunk(items: IconItem[], size: number) {
   const out: IconItem[][] = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
   return out.length ? out : [[]];
 }
+
+/** Tap-and-hold to hear a label read aloud; a normal tap still activates. */
+function useHoldToSpeak() {
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spoke = useRef(false);
+
+  const clear = useCallback(() => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+  }, []);
+
+  const handlers = useCallback(
+    (label: string) => ({
+      onPointerDown: () => {
+        spoke.current = false;
+        clear();
+        timer.current = setTimeout(() => {
+          spoke.current = true;
+          speak(label);
+        }, HOLD_MS);
+      },
+      onPointerUp: clear,
+      onPointerLeave: clear,
+      onPointerCancel: clear,
+      onContextMenu: (e: React.MouseEvent) => {
+        if (spoke.current) e.preventDefault();
+      },
+    }),
+    [clear],
+  );
+
+  return { handlers, didSpeak: () => spoke.current };
+}
+
 
 export function IconGrid({
   sequence,
@@ -75,13 +111,43 @@ export function IconGrid({
   const groupsUsed = sequenceCategories(sequence).length;
   const ruleError = enforceRules ? sequenceError(sequence) : null;
 
+  const hold = useHoldToSpeak();
+  const [narration, setNarrationState] = useState(true);
+  const canSpeak = speechSupported();
+
+  useEffect(() => {
+    setNarrationState(isNarrationOn());
+    return () => stopSpeaking();
+  }, []);
+
+
   return (
     <div className="space-y-4">
       {/* Selected sequence preview */}
       <div className="rounded-xl border border-border bg-card p-3">
-        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Your picture sequence
-        </p>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Your picture sequence
+          </p>
+          {canSpeak && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              aria-pressed={narration}
+              onClick={() => {
+                const next = !narration;
+                setNarrationState(next);
+                setNarration(next);
+                if (next) speak("Sound on. Tap and hold a picture to hear its name.");
+              }}
+            >
+              {narration ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+              {narration ? "Sound on" : "Sound off"}
+            </Button>
+          )}
+        </div>
+
         <div className="flex min-h-14 flex-wrap items-center gap-2">
           {sequence.length === 0 && (
             <span className="text-sm text-muted-foreground">
@@ -160,6 +226,13 @@ export function IconGrid({
           />
         </div>
 
+        {canSpeak && narration && (
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Volume2 className="size-3.5" aria-hidden /> Tap and hold a picture to hear its name.
+          </p>
+        )}
+
+
         {/* Category list */}
         {!category && (
           <ul className="max-h-[15.5rem] snap-y snap-mandatory space-y-2 overflow-y-auto overscroll-contain rounded-xl pr-1">
@@ -172,9 +245,15 @@ export function IconGrid({
                 <li key={c.id} className="snap-start">
                   <button
                     type="button"
-                    onClick={() => setCategory(c.id)}
+                    {...hold.handlers(`${c.label} group`)}
+                    onClick={() => {
+                      if (hold.didSpeak()) return;
+                      stopSpeaking();
+                      setCategory(c.id);
+                    }}
                     className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
+
                     <span
                       className="flex size-11 items-center justify-center rounded-lg bg-muted"
                       style={{ color: c.color }}
@@ -237,7 +316,13 @@ export function IconGrid({
                           aria-label={label}
                           title={label}
                           disabled={disabled}
-                          onClick={() => onChange([...sequence, id])}
+                          {...hold.handlers(label)}
+                          onClick={() => {
+                            if (hold.didSpeak()) return;
+                            speak(label);
+                            onChange([...sequence, id]);
+                          }}
+
                           className={cn(
                             "relative flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card transition-colors",
                             "hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
