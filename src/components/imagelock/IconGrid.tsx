@@ -16,6 +16,7 @@ import {
 } from "@/lib/imagelock/icons";
 import { speak, stopSpeaking } from "@/lib/imagelock/speak";
 import { ICON_SIZES, useSettings } from "@/lib/imagelock/settings";
+import { sequenceStrength } from "@/lib/imagelock/strength";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -30,6 +31,22 @@ type Props = {
 };
 
 const HOLD_MS = 400;
+
+const STRENGTH_TEXT: Record<string, string> = {
+  muted: "text-muted-foreground",
+  weak: "text-destructive",
+  fair: "text-accent-foreground",
+  strong: "text-primary",
+  best: "text-primary",
+};
+
+const STRENGTH_BG: Record<string, string> = {
+  muted: "bg-muted-foreground/40",
+  weak: "bg-destructive",
+  fair: "bg-accent",
+  strong: "bg-primary",
+  best: "bg-primary",
+};
 
 function chunk(items: IconItem[], size: number) {
   const out: IconItem[][] = [];
@@ -112,6 +129,7 @@ export function IconGrid({
   const activeCategory = CATEGORIES.find((c) => c.id === category);
   const groupsUsed = sequenceCategories(sequence).length;
   const ruleError = enforceRules ? sequenceError(sequence) : null;
+  const strength = sequenceStrength(sequence);
 
   const hold = useHoldToSpeak();
 
@@ -152,7 +170,30 @@ export function IconGrid({
             );
           })}
         </div>
+        {enforceRules && (
+          <div className="mt-3" aria-live="polite">
+            <div className="mb-1 flex items-center justify-between text-xs">
+              <span className="font-medium text-muted-foreground">Sequence strength</span>
+              <span className={cn("font-semibold", STRENGTH_TEXT[strength.tone])}>
+                {strength.label}
+              </span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                className={cn("h-full rounded-full transition-all", STRENGTH_BG[strength.tone])}
+                style={{ width: `${strength.score}%` }}
+                role="progressbar"
+                aria-valuenow={strength.score}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Sequence strength"
+              />
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">{strength.tip}</p>
+          </div>
+        )}
         <div className="mt-3 flex flex-wrap gap-2">
+
           {confirmed ? (
             <Button type="button" variant="outline" size="sm" onClick={onEdit}>
               <Pencil className="size-4" /> Edit
