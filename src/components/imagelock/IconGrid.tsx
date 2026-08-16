@@ -196,10 +196,10 @@ export function IconGrid({
         )}
 
         {/* Paged, horizontally swipeable grid */}
-        {category && (
+        {(category || searching) && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              {(
+              {category && (
                 <Button
                   type="button"
                   variant="outline"
