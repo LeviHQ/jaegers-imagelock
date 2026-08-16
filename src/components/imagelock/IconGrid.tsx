@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, ChevronRight, Lock, Pencil, Search, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowLeft, Check, ChevronRight, Lock, Pencil, Search, Volume2, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,8 @@ import {
   type CategoryId,
   type IconItem,
 } from "@/lib/imagelock/icons";
-import { isNarrationOn, setNarration, speak, speechSupported, stopSpeaking } from "@/lib/imagelock/speak";
+import { speak, stopSpeaking } from "@/lib/imagelock/speak";
+import { ICON_SIZES, useSettings } from "@/lib/imagelock/settings";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -28,7 +29,6 @@ type Props = {
   enforceRules?: boolean;
 };
 
-const PAGE_SIZE = 16; // 4 columns x 4 rows
 const HOLD_MS = 400;
 
 function chunk(items: IconItem[], size: number) {
@@ -106,21 +106,16 @@ export function IconGrid({
     );
   }, [query]);
 
-  const pages = chunk(visible, PAGE_SIZE);
+  const { sound: narration, iconSize } = useSettings();
+  const sizeConf = ICON_SIZES.find((s) => s.id === iconSize) ?? { id: "medium" as const, label: "Medium", cols: 4, rows: 4 };
+  const pages = chunk(visible, sizeConf.cols * sizeConf.rows);
   const activeCategory = CATEGORIES.find((c) => c.id === category);
   const groupsUsed = sequenceCategories(sequence).length;
   const ruleError = enforceRules ? sequenceError(sequence) : null;
 
   const hold = useHoldToSpeak();
-  const [narration, setNarrationState] = useState(true);
-  const [canSpeak, setCanSpeak] = useState(false);
 
-  useEffect(() => {
-    setCanSpeak(speechSupported());
-    setNarrationState(isNarrationOn());
-    return () => stopSpeaking();
-  }, []);
-
+  useEffect(() => () => stopSpeaking(), []);
 
   return (
     <div className="space-y-4">
@@ -130,24 +125,8 @@ export function IconGrid({
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Your picture sequence
           </p>
-          {canSpeak && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              aria-pressed={narration}
-              onClick={() => {
-                const next = !narration;
-                setNarrationState(next);
-                setNarration(next);
-                if (next) speak("Sound on. Tap and hold a picture to hear its name.");
-              }}
-            >
-              {narration ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
-              {narration ? "Sound on" : "Sound off"}
-            </Button>
-          )}
         </div>
+
 
         <div className="flex min-h-14 flex-wrap items-center gap-2">
           {sequence.length === 0 && (
@@ -227,7 +206,7 @@ export function IconGrid({
           />
         </div>
 
-        {canSpeak && narration && (
+        {narration && (
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Volume2 className="size-3.5" aria-hidden /> Tap and hold a picture to hear its name.
           </p>
@@ -306,7 +285,8 @@ export function IconGrid({
                 {pages.map((page, pageIndex) => (
                   <div
                     key={pageIndex}
-                    className="grid w-full flex-none snap-start grid-cols-4 grid-rows-4 gap-2"
+                    style={{ ["--ig-cols" as string]: sizeConf.cols, ["--ig-rows" as string]: sizeConf.rows }}
+                    className="grid w-full flex-none snap-start grid-cols-[repeat(var(--ig-cols),minmax(0,1fr))] grid-rows-[repeat(var(--ig-rows),minmax(0,1fr))] gap-2"
                   >
                     {page.map(({ id, label, Icon, color }) => {
                       const count = sequence.filter((s) => s === id).length;
@@ -330,8 +310,8 @@ export function IconGrid({
                             count > 0 && "border-primary bg-primary/10",
                           )}
                         >
-                          <Icon className="size-8" style={{ color }} aria-hidden />
-                          <span className="max-w-full truncate px-1 text-[10px] text-muted-foreground">
+                          <Icon className={cn(sizeConf.id === "small" ? "size-6" : sizeConf.id === "large" ? "size-12" : "size-8")} style={{ color }} aria-hidden />
+                          <span className={cn("max-w-full truncate px-1 text-muted-foreground", sizeConf.id === "large" ? "text-xs" : "text-[10px]")}>
                             {label}
                           </span>
                           {count > 0 && (
