@@ -7,7 +7,9 @@ import {
   KeyRound,
   Lock,
   LogOut,
+  MailQuestion,
   ShieldCheck,
+  UserPlus,
 } from "lucide-react";
 import { useState } from "react";
 
