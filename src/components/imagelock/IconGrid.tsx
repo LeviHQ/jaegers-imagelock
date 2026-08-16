@@ -52,10 +52,23 @@ export function IconGrid({
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
+    if (category) {
+      const inCat = ICONS.filter((i) => i.category === category);
+      return q ? inCat.filter((i) => i.label.toLowerCase().includes(q)) : inCat;
+    }
     if (q) return ICONS.filter((i) => i.label.toLowerCase().includes(q));
-    if (category) return ICONS.filter((i) => i.category === category);
     return [];
   }, [query, category]);
+
+  const visibleCategories = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return CATEGORIES;
+    return CATEGORIES.filter(
+      (c) =>
+        c.label.toLowerCase().includes(q) ||
+        ICONS.some((i) => i.category === c.id && i.label.toLowerCase().includes(q)),
+    );
+  }, [query]);
 
   const pages = chunk(visible, PAGE_SIZE);
   const activeCategory = CATEGORIES.find((c) => c.id === category);
@@ -148,12 +161,15 @@ export function IconGrid({
         </div>
 
         {/* Category list */}
-        {!searching && !category && (
-          <ul className="space-y-2">
-            {CATEGORIES.map((c) => {
+        {!category && (
+          <ul className="max-h-[15.5rem] snap-y snap-mandatory space-y-2 overflow-y-auto overscroll-contain rounded-xl pr-1">
+            {visibleCategories.length === 0 && (
+              <li className="p-3 text-sm text-muted-foreground">No groups match your search.</li>
+            )}
+            {visibleCategories.map((c) => {
               const count = ICONS.filter((i) => i.category === c.id).length;
               return (
-                <li key={c.id}>
+                <li key={c.id} className="snap-start">
                   <button
                     type="button"
                     onClick={() => setCategory(c.id)}
@@ -180,10 +196,10 @@ export function IconGrid({
         )}
 
         {/* Paged, horizontally swipeable grid */}
-        {(searching || category) && (
+        {(category || searching) && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              {!searching && (
+              {category && (
                 <Button
                   type="button"
                   variant="outline"
