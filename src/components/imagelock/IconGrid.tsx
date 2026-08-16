@@ -52,10 +52,23 @@ export function IconGrid({
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
+    if (category) {
+      const inCat = ICONS.filter((i) => i.category === category);
+      return q ? inCat.filter((i) => i.label.toLowerCase().includes(q)) : inCat;
+    }
     if (q) return ICONS.filter((i) => i.label.toLowerCase().includes(q));
-    if (category) return ICONS.filter((i) => i.category === category);
     return [];
   }, [query, category]);
+
+  const visibleCategories = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return CATEGORIES;
+    return CATEGORIES.filter(
+      (c) =>
+        c.label.toLowerCase().includes(q) ||
+        ICONS.some((i) => i.category === c.id && i.label.toLowerCase().includes(q)),
+    );
+  }, [query]);
 
   const pages = chunk(visible, PAGE_SIZE);
   const activeCategory = CATEGORIES.find((c) => c.id === category);
