@@ -9,6 +9,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { hashSequence, syntheticEmail } from "@/lib/imagelock/hash";
+import { sequenceError } from "@/lib/imagelock/icons";
+
+const USERNAME_RE = /^[a-zA-Z0-9_]{3,32}$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+function validateUsername(value: string) {
+  const v = value.trim();
+  if (!v) return "Username is required.";
+  if (v.length < 3) return "Username must be at least 3 characters.";
+  if (v.length > 32) return "Username must be 32 characters or less.";
+  if (!USERNAME_RE.test(v)) return "Only letters, numbers and underscores are allowed.";
+  return null;
+}
+
+function validateEmail(value: string) {
+  const v = value.trim();
+  if (!v) return "Email is required.";
+  if (v.length > 255) return "Email must be 255 characters or less.";
+  if (!EMAIL_RE.test(v)) return "Enter a valid email like you@example.com.";
+  return null;
+}
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -36,14 +57,21 @@ function RegisterPage() {
   const [sequence, setSequence] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   async function handleSubmit() {
-    if (!/^[a-zA-Z0-9_]{3,32}$/.test(username.trim())) {
-      toast.error("Username must be 3-32 letters, numbers or underscores.");
+    const uError = validateUsername(username);
+    const eError = validateEmail(email);
+    setUsernameError(uError);
+    setEmailError(eError);
+    const seqError = sequenceError(sequence);
+    if (uError || eError) {
+      toast.error(uError ?? eError!);
       return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim())) {
-      toast.error("Please enter a valid email address.");
+    if (seqError) {
+      toast.error(seqError);
       return;
     }
     setBusy(true);
@@ -51,6 +79,25 @@ function RegisterPage() {
     try {
       const normalizedUsername = username.trim().toLowerCase();
       const recoveryEmail = email.trim().toLowerCase();
+
+      const { data: availability } = await supabase.rpc("imagelock_availability", {
+        _username: normalizedUsername,
+        _email: recoveryEmail,
+      });
+      const taken = availability as
+        | { username_taken?: boolean; email_taken?: boolean }
+        | null;
+      if (taken?.username_taken || taken?.email_taken) {
+        if (taken.username_taken) setUsernameError("This username is already taken.");
+        if (taken.email_taken) setEmailError("This email is already registered.");
+        toast.error(
+          taken.username_taken
+            ? "This username is already taken. Try another one."
+            : "This email is already registered. Log in or reset your sequence.",
+        );
+        return;
+      }
+
       const hash = await hashSequence(normalizedUsername, sequence);
       const { data, error } = await supabase.auth.signUp({
         email: syntheticEmail(normalizedUsername),
@@ -65,15 +112,21 @@ function RegisterPage() {
 
       if (error) {
         console.error("Account creation request failed", error);
-        const duplicate =
-          error.message.toLowerCase().includes("already") ||
-          error.message.toLowerCase().includes("registered") ||
-          error.message.toLowerCase().includes("database error");
-        toast.error(
-          duplicate
-            ? "That username is already taken."
-            : "Could not create the account. Please try again.",
-        );
+        const message = error.message.toLowerCase();
+        if (message.includes("email_taken")) {
+          setEmailError("This email is already registered.");
+          toast.error("This email is already registered.");
+        } else if (
+          message.includes("username_taken") ||
+          message.includes("already") ||
+          message.includes("registered") ||
+          message.includes("database error")
+        ) {
+          setUsernameError("This username is already taken.");
+          toast.error("This username is already taken. Try another one.");
+        } else {
+          toast.error("Could not create the account. Please try again.");
+        }
         return;
       }
 
@@ -119,9 +172,18 @@ function RegisterPage() {
               id="username"
               value={username}
               maxLength={32}
-              onChange={(e) => setUsername(e.target.value)}
+              aria-invalid={Boolean(usernameError)}
+              aria-describedby="username-error"
+              onChange={(e) => {
+                setUsername(e.target.value);
+                if (usernameError) setUsernameError(null);
+              }}
+              onBlur={() => setUsernameError(validateUsername(username))}
               placeholder="your name"
             />
+            <p id="username-error" className="min-h-4 text-xs text-destructive">
+              {usernameError}
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email (for recovery only)</Label>
@@ -130,9 +192,18 @@ function RegisterPage() {
               type="email"
               value={email}
               maxLength={255}
-              onChange={(e) => setEmail(e.target.value)}
+              aria-invalid={Boolean(emailError)}
+              aria-describedby="email-error"
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (emailError) setEmailError(null);
+              }}
+              onBlur={() => setEmailError(validateEmail(email))}
               placeholder="you@example.com"
             />
+            <p id="email-error" className="min-h-4 text-xs text-destructive">
+              {emailError}
+            </p>
           </div>
         </div>
 
