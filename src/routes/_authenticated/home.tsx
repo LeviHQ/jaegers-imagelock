@@ -176,22 +176,48 @@ function HomePage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="mb-4 text-xl font-semibold">How it works</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {GUIDE.map(({ Icon, title, text }) => (
-            <div
+        <h2 className="text-xl font-semibold">How it works — step by step</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Read it in order. Each step is one part of your picture password.
+        </p>
+
+        <ol className="mt-5 space-y-4">
+          {STEPS.map(({ Icon, title, text, points, upcoming }, index) => (
+            <li
               key={title}
-              className="flex items-start gap-4 rounded-xl border border-border bg-card p-4"
+              className="relative rounded-2xl border border-border bg-card p-4 sm:p-5"
             >
-              <Icon className="size-9 shrink-0 text-primary" />
-              <div>
-                <p className="font-medium">{title}</p>
-                <p className="text-sm text-muted-foreground">{text}</p>
+              <div className="flex items-start gap-4">
+                <span className="flex size-12 shrink-0 flex-col items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Icon className="size-6" aria-hidden />
+                  <span className="text-[10px] font-bold">{index + 1}</span>
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-semibold">{title}</h3>
+                    {upcoming && (
+                      <span className="rounded-full border border-accent bg-accent/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-accent-foreground">
+                        Upcoming
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">{text}</p>
+                  <ul className="mt-3 space-y-1.5">
+                    {points.map((point) => (
+                      <li key={point} className="flex items-start gap-2 text-sm">
+                        <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ol>
       </section>
+
+
 
       {profile?.username && (
         <ChangePatternDialog
