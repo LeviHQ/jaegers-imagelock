@@ -113,9 +113,10 @@ export function IconGrid({
 
   const hold = useHoldToSpeak();
   const [narration, setNarrationState] = useState(true);
-  const canSpeak = speechSupported();
+  const [canSpeak, setCanSpeak] = useState(false);
 
   useEffect(() => {
+    setCanSpeak(speechSupported());
     setNarrationState(isNarrationOn());
     return () => stopSpeaking();
   }, []);
