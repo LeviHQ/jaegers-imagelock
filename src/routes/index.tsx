@@ -161,6 +161,7 @@ function LoginPage() {
           sequence={sequence}
           onChange={setSequence}
           locked={locked}
+          enforceRules={false}
           confirmed={confirmed}
           onConfirm={() => setConfirmed(true)}
           onEdit={() => setConfirmed(false)}
