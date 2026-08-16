@@ -256,7 +256,7 @@ export function IconGrid({
 
         {/* Category list */}
         {!category && (
-          <ul className="max-h-[15.5rem] snap-y snap-mandatory space-y-2 overflow-y-auto overscroll-contain rounded-xl pr-1">
+          <ul className="max-h-[15.5rem] snap-y snap-mandatory space-y-2 overflow-y-auto overscroll-contain rounded-xl pr-1 scrollbar-hide">
             {visibleCategories.length === 0 && (
               <li className="p-3 text-sm text-muted-foreground">No groups match your search.</li>
             )}
