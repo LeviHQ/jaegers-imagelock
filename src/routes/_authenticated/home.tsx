@@ -161,15 +161,26 @@ function HomePage() {
   async function removeAccount() {
     setDeleting(true);
     try {
-      const result = await deleteAccount();
-      if (!result.ok) {
-        toast.error(result.error);
-        return;
+      // Primary path: database function, works anywhere (no server secrets needed).
+      const { error: rpcError } = await supabase.rpc("delete_own_account");
+
+      if (rpcError) {
+        // Fallback: server function with admin access (only where it is configured).
+        const result = await deleteAccount();
+        if (!result.ok) {
+          toast.error(result.error);
+          return;
+        }
       }
+
       toast.success("Your account has been deleted.");
       await queryClient.cancelQueries();
       queryClient.clear();
-      await supabase.auth.signOut();
+      try {
+        await supabase.auth.signOut();
+      } catch {
+        /* session is already gone */
+      }
       navigate({ to: "/", replace: true });
     } catch {
       toast.error("Could not delete the account right now. Please try again.");
@@ -177,6 +188,7 @@ function HomePage() {
       setDeleting(false);
     }
   }
+
 
   async function signOut() {
     await queryClient.cancelQueries();
