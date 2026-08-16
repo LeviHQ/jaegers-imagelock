@@ -303,7 +303,13 @@ export function IconGrid({
                           aria-label={label}
                           title={label}
                           disabled={disabled}
-                          onClick={() => onChange([...sequence, id])}
+                          {...hold.handlers(label)}
+                          onClick={() => {
+                            if (hold.didSpeak()) return;
+                            speak(label);
+                            onChange([...sequence, id]);
+                          }}
+
                           className={cn(
                             "relative flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card transition-colors",
                             "hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
