@@ -52,7 +52,7 @@ function RegisterPage() {
       const normalizedUsername = username.trim().toLowerCase();
       const recoveryEmail = email.trim().toLowerCase();
       const hash = await hashSequence(normalizedUsername, sequence);
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: syntheticEmail(normalizedUsername),
         password: hash,
         options: {
@@ -64,6 +64,7 @@ function RegisterPage() {
       });
 
       if (error) {
+        console.error("Account creation request failed", error);
         const duplicate =
           error.message.toLowerCase().includes("already") ||
           error.message.toLowerCase().includes("registered") ||
@@ -76,11 +77,23 @@ function RegisterPage() {
         return;
       }
 
-      await supabase.auth.signOut();
+      if (!data.user) {
+        toast.error("Could not create the account. Please try again.");
+        return;
+      }
+
+      // Account creation has already succeeded at this point. Session cleanup
+      // must never turn that success into a false "creation failed" message.
+      try {
+        await supabase.auth.signOut({ scope: "local" });
+      } catch (signOutError) {
+        console.error("Post-signup session cleanup failed", signOutError);
+      }
       toast.success("Account created. Now log in with your pictures.");
       navigate({ to: "/" });
-    } catch {
-      toast.error("Could not create your account. Check your details and try again.");
+    } catch (error) {
+      console.error("Account creation failed before completion", error);
+      toast.error("Could not reach the account service. Check your connection and try again.");
     } finally {
       setBusy(false);
     }
