@@ -322,7 +322,7 @@ export function IconGrid({
                 No picture found. Try another word.
               </p>
             ) : (
-              <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2">
+              <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 scrollbar-hide">
                 {pages.map((page, pageIndex) => (
                   <div
                     key={pageIndex}
