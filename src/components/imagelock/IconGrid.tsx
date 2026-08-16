@@ -1,5 +1,5 @@
-import { ArrowLeft, Check, ChevronRight, Lock, Pencil, Search, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowLeft, Check, ChevronRight, Lock, Pencil, Search, Volume2, VolumeX, X } from "lucide-react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import {
   type CategoryId,
   type IconItem,
 } from "@/lib/imagelock/icons";
+import { isNarrationOn, setNarration, speak, speechSupported, stopSpeaking } from "@/lib/imagelock/speak";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -28,12 +29,47 @@ type Props = {
 };
 
 const PAGE_SIZE = 16; // 4 columns x 4 rows
+const HOLD_MS = 400;
 
 function chunk(items: IconItem[], size: number) {
   const out: IconItem[][] = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
   return out.length ? out : [[]];
 }
+
+/** Tap-and-hold to hear a label read aloud; a normal tap still activates. */
+function useHoldToSpeak() {
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const spoke = useRef(false);
+
+  const clear = useCallback(() => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+  }, []);
+
+  const handlers = useCallback(
+    (label: string) => ({
+      onPointerDown: () => {
+        spoke.current = false;
+        clear();
+        timer.current = setTimeout(() => {
+          spoke.current = true;
+          speak(label);
+        }, HOLD_MS);
+      },
+      onPointerUp: clear,
+      onPointerLeave: clear,
+      onPointerCancel: clear,
+      onContextMenu: (e: React.MouseEvent) => {
+        if (spoke.current) e.preventDefault();
+      },
+    }),
+    [clear],
+  );
+
+  return { handlers, didSpeak: () => spoke.current };
+}
+
 
 export function IconGrid({
   sequence,
