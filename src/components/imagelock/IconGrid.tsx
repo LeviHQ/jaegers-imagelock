@@ -106,20 +106,16 @@ export function IconGrid({
     );
   }, [query]);
 
-  const pages = chunk(visible, PAGE_SIZE);
+  const { sound: narration, iconSize } = useSettings();
+  const sizeConf = ICON_SIZES.find((s) => s.id === iconSize) ?? ICON_SIZES[1];
+  const pages = chunk(visible, sizeConf.cols * sizeConf.rows);
   const activeCategory = CATEGORIES.find((c) => c.id === category);
   const groupsUsed = sequenceCategories(sequence).length;
   const ruleError = enforceRules ? sequenceError(sequence) : null;
 
   const hold = useHoldToSpeak();
-  const [canSpeak, setCanSpeak] = useState(false);
 
-  useEffect(() => {
-    setCanSpeak(speechSupported());
-    setNarrationState(isNarrationOn());
-    return () => stopSpeaking();
-  }, []);
-
+  useEffect(() => () => stopSpeaking(), []);
 
   return (
     <div className="space-y-4">
@@ -129,24 +125,8 @@ export function IconGrid({
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Your picture sequence
           </p>
-          {canSpeak && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              aria-pressed={narration}
-              onClick={() => {
-                const next = !narration;
-                setNarrationState(next);
-                setNarration(next);
-                if (next) speak("Sound on. Tap and hold a picture to hear its name.");
-              }}
-            >
-              {narration ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
-              {narration ? "Sound on" : "Sound off"}
-            </Button>
-          )}
         </div>
+
 
         <div className="flex min-h-14 flex-wrap items-center gap-2">
           {sequence.length === 0 && (
