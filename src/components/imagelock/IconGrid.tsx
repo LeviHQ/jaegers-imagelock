@@ -7,7 +7,10 @@ import {
   CATEGORIES,
   ICONS,
   ICON_MAP,
+  MIN_CATEGORIES,
   MIN_SEQUENCE,
+  sequenceCategories,
+  sequenceError,
   type CategoryId,
   type IconItem,
 } from "@/lib/imagelock/icons";
