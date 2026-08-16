@@ -59,11 +59,18 @@ function LoginPage() {
   async function handleSubmit() {
     if (!username.trim() || sequence.length < 4) return;
     setBusy(true);
+    const name = username.trim();
     try {
-      const state = await lockState({ data: { username: username.trim() } });
-      if (state.locked) {
-        setCooldown(state.secondsLeft);
-        return;
+      // Lockout bookkeeping runs on the server; if it is unavailable we still
+      // allow the sign-in attempt instead of failing the whole login.
+      try {
+        const state = await lockState({ data: { username: name } });
+        if (state.locked) {
+          setCooldown(state.secondsLeft);
+          return;
+        }
+      } catch (e) {
+        console.warn("Lock state unavailable", e);
       }
 
       const hash = await hashSequence(username, sequence);
@@ -73,28 +80,40 @@ function LoginPage() {
       });
 
       if (error) {
-        const next = await failAttempt({ data: { username: username.trim() } });
-        setAttemptsLeft(next.attemptsLeft);
         setSequence([]);
         setConfirmed(false);
-        if (next.locked) {
-          setCooldown(next.secondsLeft);
-        } else {
+        try {
+          const next = await failAttempt({ data: { username: name } });
+          setAttemptsLeft(next.attemptsLeft);
+          if (next.locked) {
+            setCooldown(next.secondsLeft);
+            return;
+          }
           toast.error("Wrong picture sequence", {
             description: `${next.attemptsLeft} attempt(s) left before lockout.`,
+          });
+        } catch {
+          toast.error("Wrong username or picture sequence", {
+            description: "Please check and try again.",
           });
         }
         return;
       }
 
-      await clear({ data: { username: username.trim() } });
+      try {
+        await clear({ data: { username: name } });
+      } catch (e) {
+        console.warn("Could not reset attempt counter", e);
+      }
       navigate({ to: "/home" });
-    } catch {
+    } catch (error) {
+      console.error("Login failed", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setBusy(false);
     }
   }
+
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
