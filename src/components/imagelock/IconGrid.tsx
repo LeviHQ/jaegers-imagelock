@@ -107,7 +107,7 @@ export function IconGrid({
   }, [query]);
 
   const { sound: narration, iconSize } = useSettings();
-  const sizeConf = ICON_SIZES.find((s) => s.id === iconSize) ?? ICON_SIZES[1];
+  const sizeConf = ICON_SIZES.find((s) => s.id === iconSize) ?? { id: "medium" as const, label: "Medium", cols: 4, rows: 4 };
   const pages = chunk(visible, sizeConf.cols * sizeConf.rows);
   const activeCategory = CATEGORIES.find((c) => c.id === category);
   const groupsUsed = sequenceCategories(sequence).length;
@@ -206,7 +206,7 @@ export function IconGrid({
           />
         </div>
 
-        {canSpeak && narration && (
+        {narration && (
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Volume2 className="size-3.5" aria-hidden /> Tap and hold a picture to hear its name.
           </p>
@@ -285,7 +285,8 @@ export function IconGrid({
                 {pages.map((page, pageIndex) => (
                   <div
                     key={pageIndex}
-                    className="grid w-full flex-none snap-start grid-cols-4 grid-rows-4 gap-2"
+                    style={{ ["--ig-cols" as string]: sizeConf.cols, ["--ig-rows" as string]: sizeConf.rows }}
+                    className="grid w-full flex-none snap-start grid-cols-[repeat(var(--ig-cols),minmax(0,1fr))] grid-rows-[repeat(var(--ig-rows),minmax(0,1fr))] gap-2"
                   >
                     {page.map(({ id, label, Icon, color }) => {
                       const count = sequence.filter((s) => s === id).length;
@@ -309,8 +310,8 @@ export function IconGrid({
                             count > 0 && "border-primary bg-primary/10",
                           )}
                         >
-                          <Icon className="size-8" style={{ color }} aria-hidden />
-                          <span className="max-w-full truncate px-1 text-[10px] text-muted-foreground">
+                          <Icon className={cn(sizeConf.id === "small" ? "size-6" : sizeConf.id === "large" ? "size-12" : "size-8")} style={{ color }} aria-hidden />
+                          <span className={cn("max-w-full truncate px-1 text-muted-foreground", sizeConf.id === "large" ? "text-xs" : "text-[10px]")}>
                             {label}
                           </span>
                           {count > 0 && (
