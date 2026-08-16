@@ -23,6 +23,8 @@ type Props = {
   confirmed?: boolean;
   onConfirm?: () => void;
   onEdit?: () => void;
+  /** Enforce the minimum length / multi-group rules (off for login). */
+  enforceRules?: boolean;
 };
 
 const PAGE_SIZE = 16; // 4 columns x 4 rows
@@ -40,6 +42,7 @@ export function IconGrid({
   confirmed = false,
   onConfirm,
   onEdit,
+  enforceRules = true,
 }: Props) {
   const disabled = locked || confirmed;
   const [category, setCategory] = useState<CategoryId | null>(null);
@@ -69,7 +72,9 @@ export function IconGrid({
         <div className="flex min-h-14 flex-wrap items-center gap-2">
           {sequence.length === 0 && (
             <span className="text-sm text-muted-foreground">
-              Tap at least {MIN_SEQUENCE} pictures, in order.
+              {enforceRules
+                ? `Tap at least ${MIN_SEQUENCE} pictures from ${MIN_CATEGORIES}+ groups, in order.`
+                : "Tap your pictures, in order."}
             </span>
           )}
           {sequence.map((id, index) => {
@@ -107,7 +112,7 @@ export function IconGrid({
               <Button
                 type="button"
                 size="sm"
-                disabled={locked || sequence.length < MIN_SEQUENCE}
+                disabled={locked || sequence.length < MIN_SEQUENCE || Boolean(ruleError)}
                 onClick={onConfirm}
               >
                 <Check className="size-4" /> Done
@@ -115,6 +120,18 @@ export function IconGrid({
             </>
           )}
         </div>
+        {enforceRules && (
+          <p
+            className={cn(
+              "mt-2 text-xs",
+              ruleError ? "text-destructive" : "text-muted-foreground",
+            )}
+            role="status"
+          >
+            {ruleError ??
+              `Looks good — ${sequence.length} pictures from ${groupsUsed} groups.`}
+          </p>
+        )}
       </div>
 
       <div className={cn("relative space-y-3", disabled && "pointer-events-none opacity-40")}>
