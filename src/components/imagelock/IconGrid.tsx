@@ -226,6 +226,13 @@ export function IconGrid({
           />
         </div>
 
+        {canSpeak && narration && (
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Volume2 className="size-3.5" aria-hidden /> Tap and hold a picture to hear its name.
+          </p>
+        )}
+
+
         {/* Category list */}
         {!category && (
           <ul className="max-h-[15.5rem] snap-y snap-mandatory space-y-2 overflow-y-auto overscroll-contain rounded-xl pr-1">
