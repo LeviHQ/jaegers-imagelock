@@ -73,6 +73,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_own_account: { Args: never; Returns: undefined }
       imagelock_availability: {
         Args: { _email: string; _username: string }
         Returns: Json
