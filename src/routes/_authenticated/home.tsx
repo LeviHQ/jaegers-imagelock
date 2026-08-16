@@ -10,11 +10,26 @@ import {
   MailQuestion,
   ShieldCheck,
   Sparkles,
+  Trash2,
   UserPlus,
 } from "lucide-react";
 import { useState } from "react";
 
+import { toast } from "sonner";
+
 import { ChangePatternDialog } from "@/components/imagelock/ChangePatternDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteAccount } from "@/lib/imagelock/auth.functions";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -127,6 +142,7 @@ function HomePage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
@@ -141,6 +157,26 @@ function HomePage() {
       return data;
     },
   });
+
+  async function removeAccount() {
+    setDeleting(true);
+    try {
+      const result = await deleteAccount();
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Your account has been deleted.");
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      await supabase.auth.signOut();
+      navigate({ to: "/", replace: true });
+    } catch {
+      toast.error("Could not delete the account right now. Please try again.");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -166,6 +202,31 @@ function HomePage() {
           <Button variant="ghost" onClick={signOut} aria-label="Log out">
             <LogOut className="size-4" /> Log out
           </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" disabled={deleting} aria-label="Delete account">
+                <Trash2 className="size-4" /> Delete account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This permanently removes your profile and your picture sequence. You cannot undo
+                  this, and you will need to register again to come back.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Keep my account</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={removeAccount}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {deleting ? "Deleting…" : "Yes, delete it"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
