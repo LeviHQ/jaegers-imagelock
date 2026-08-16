@@ -169,7 +169,7 @@ export function IconGrid({
             {visibleCategories.map((c) => {
               const count = ICONS.filter((i) => i.category === c.id).length;
               return (
-                <li key={c.id}>
+                <li key={c.id} className="snap-start">
                   <button
                     type="button"
                     onClick={() => setCategory(c.id)}
@@ -196,10 +196,10 @@ export function IconGrid({
         )}
 
         {/* Paged, horizontally swipeable grid */}
-        {(searching || category) && (
+        {category && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              {!searching && (
+              {(
                 <Button
                   type="button"
                   variant="outline"
