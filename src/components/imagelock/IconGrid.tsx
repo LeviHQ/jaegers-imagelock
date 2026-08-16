@@ -1,5 +1,5 @@
 import { ArrowLeft, Check, ChevronRight, Lock, Pencil, Search, Volume2, VolumeX, X } from "lucide-react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
