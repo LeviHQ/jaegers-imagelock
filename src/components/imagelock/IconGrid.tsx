@@ -14,7 +14,8 @@ import {
   type CategoryId,
   type IconItem,
 } from "@/lib/imagelock/icons";
-import { isNarrationOn, setNarration, speak, speechSupported, stopSpeaking } from "@/lib/imagelock/speak";
+import { speak, stopSpeaking } from "@/lib/imagelock/speak";
+import { ICON_SIZES, useSettings } from "@/lib/imagelock/settings";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -28,7 +29,6 @@ type Props = {
   enforceRules?: boolean;
 };
 
-const PAGE_SIZE = 16; // 4 columns x 4 rows
 const HOLD_MS = 400;
 
 function chunk(items: IconItem[], size: number) {
@@ -112,7 +112,6 @@ export function IconGrid({
   const ruleError = enforceRules ? sequenceError(sequence) : null;
 
   const hold = useHoldToSpeak();
-  const [narration, setNarrationState] = useState(true);
   const [canSpeak, setCanSpeak] = useState(false);
 
   useEffect(() => {
