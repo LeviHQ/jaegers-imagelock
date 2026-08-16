@@ -9,6 +9,7 @@ import {
   LogOut,
   MailQuestion,
   ShieldCheck,
+  Sparkles,
   UserPlus,
 } from "lucide-react";
 import { useState } from "react";
@@ -196,7 +197,8 @@ function HomePage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-semibold">{title}</h3>
                     {upcoming && (
-                      <span className="rounded-full border border-accent bg-accent/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-accent-foreground">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-accent bg-accent px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-accent-foreground shadow-sm">
+                        <Sparkles className="size-3" aria-hidden />
                         Upcoming
                       </span>
                     )}
