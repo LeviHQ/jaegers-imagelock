@@ -73,7 +73,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      imagelock_availability: {
+        Args: { _email: string; _username: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
