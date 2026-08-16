@@ -232,9 +232,15 @@ export function IconGrid({
                 <li key={c.id} className="snap-start">
                   <button
                     type="button"
-                    onClick={() => setCategory(c.id)}
+                    {...hold.handlers(`${c.label} group`)}
+                    onClick={() => {
+                      if (hold.didSpeak()) return;
+                      stopSpeaking();
+                      setCategory(c.id);
+                    }}
                     className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
+
                     <span
                       className="flex size-11 items-center justify-center rounded-lg bg-muted"
                       style={{ color: c.color }}
