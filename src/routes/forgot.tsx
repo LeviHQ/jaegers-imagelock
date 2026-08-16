@@ -43,8 +43,16 @@ function ForgotPage() {
   const [sequence, setSequence] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   async function handleSend() {
+    const value = email.trim();
+    if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value) || value.length > 255) {
+      setEmailError("Enter a valid email like you@example.com.");
+      toast.error("Enter a valid email like you@example.com.");
+      return;
+    }
+    setEmailError(null);
     setBusy(true);
     try {
       const result = await requestCode({ data: { email: email.trim() } });
@@ -104,9 +112,15 @@ function ForgotPage() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                maxLength={255}
+                aria-invalid={Boolean(emailError)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError(null);
+                }}
                 placeholder="you@example.com"
               />
+              <p className="min-h-4 text-xs text-destructive">{emailError}</p>
             </div>
             <Button
               className="w-full"
