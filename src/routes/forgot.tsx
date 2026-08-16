@@ -55,17 +55,19 @@ function ForgotPage() {
     setEmailError(null);
     setBusy(true);
     try {
-      const result = await requestCode({ data: { email: email.trim() } });
+      const result = await requestCode({ data: { email: value } });
       setDemoCode(result.demoCode);
       setUsername(result.username);
       setStep(2);
       toast.success("If that email is registered, a 6-digit code was sent.");
-    } catch {
-      toast.error("Please enter a valid email.");
+    } catch (error) {
+      console.error("Recovery code request failed", error);
+      toast.error("Recovery service is unavailable right now. Please try again later.");
     } finally {
       setBusy(false);
     }
   }
+
 
   async function handleReset() {
     if (!username) {
