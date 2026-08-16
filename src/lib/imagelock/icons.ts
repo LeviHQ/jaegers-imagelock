@@ -132,3 +132,26 @@ export const ICON_MAP: Record<string, IconItem> = Object.fromEntries(
 );
 
 export const MIN_SEQUENCE = 4;
+
+/** A sequence must span at least this many different picture groups. */
+export const MIN_CATEGORIES = 2;
+
+export function sequenceCategories(sequence: string[]): CategoryId[] {
+  const seen = new Set<CategoryId>();
+  for (const id of sequence) {
+    const item = ICON_MAP[id];
+    if (item) seen.add(item.category);
+  }
+  return [...seen];
+}
+
+/** Returns an error message when the sequence breaks a rule, else null. */
+export function sequenceError(sequence: string[]): string | null {
+  if (sequence.length < MIN_SEQUENCE) {
+    return `Pick at least ${MIN_SEQUENCE} pictures.`;
+  }
+  if (sequenceCategories(sequence).length < MIN_CATEGORIES) {
+    return `Use pictures from at least ${MIN_CATEGORIES} different groups.`;
+  }
+  return null;
+}
