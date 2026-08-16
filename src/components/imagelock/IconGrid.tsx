@@ -56,6 +56,8 @@ export function IconGrid({
 
   const pages = chunk(visible, PAGE_SIZE);
   const activeCategory = CATEGORIES.find((c) => c.id === category);
+  const groupsUsed = sequenceCategories(sequence).length;
+  const ruleError = enforceRules ? sequenceError(sequence) : null;
 
   return (
     <div className="space-y-4">
