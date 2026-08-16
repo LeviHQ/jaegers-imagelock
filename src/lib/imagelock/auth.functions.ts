@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 import {
@@ -213,4 +215,25 @@ export const resetSequence = createServerFn({ method: "POST" })
       .update({ failed_attempts: 0, locked_until: null })
       .eq("id", profile.id);
     return { ok: true as const, username: profile.username };
+  });
+
+export const deleteAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const userId = context.userId;
+    if (!userId) return { ok: false as const, error: "You are not signed in." };
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await supabaseAdmin.from("reset_codes").delete().eq("user_id", userId);
+      await supabaseAdmin.from("profiles").delete().eq("id", userId);
+      const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+      if (error) {
+        console.error("Account deletion failed", error);
+        return { ok: false as const, error: "Could not delete the account. Please try again." };
+      }
+      return { ok: true as const };
+    } catch (error) {
+      console.error("Account deletion crashed", error);
+      return { ok: false as const, error: "Account service is unavailable right now." };
+    }
   });
