@@ -161,9 +161,12 @@ export function IconGrid({
         </div>
 
         {/* Category list */}
-        {!searching && !category && (
-          <ul className="space-y-2">
-            {CATEGORIES.map((c) => {
+        {!category && (
+          <ul className="max-h-[15.5rem] snap-y snap-mandatory space-y-2 overflow-y-auto overscroll-contain rounded-xl pr-1">
+            {visibleCategories.length === 0 && (
+              <li className="p-3 text-sm text-muted-foreground">No groups match your search.</li>
+            )}
+            {visibleCategories.map((c) => {
               const count = ICONS.filter((i) => i.category === c.id).length;
               return (
                 <li key={c.id}>
