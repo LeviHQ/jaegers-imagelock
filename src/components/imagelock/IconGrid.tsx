@@ -152,7 +152,30 @@ export function IconGrid({
             );
           })}
         </div>
+        {enforceRules && (
+          <div className="mt-3" aria-live="polite">
+            <div className="mb-1 flex items-center justify-between text-xs">
+              <span className="font-medium text-muted-foreground">Sequence strength</span>
+              <span className={cn("font-semibold", STRENGTH_TEXT[strength.tone])}>
+                {strength.label}
+              </span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                className={cn("h-full rounded-full transition-all", STRENGTH_BG[strength.tone])}
+                style={{ width: `${strength.score}%` }}
+                role="progressbar"
+                aria-valuenow={strength.score}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Sequence strength"
+              />
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">{strength.tip}</p>
+          </div>
+        )}
         <div className="mt-3 flex flex-wrap gap-2">
+
           {confirmed ? (
             <Button type="button" variant="outline" size="sm" onClick={onEdit}>
               <Pencil className="size-4" /> Edit
