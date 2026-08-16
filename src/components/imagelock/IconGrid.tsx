@@ -115,6 +115,12 @@ export function IconGrid({
   const [narration, setNarrationState] = useState(true);
   const canSpeak = speechSupported();
 
+  useEffect(() => {
+    setNarrationState(isNarrationOn());
+    return () => stopSpeaking();
+  }, []);
+
+
   return (
     <div className="space-y-4">
       {/* Selected sequence preview */}
