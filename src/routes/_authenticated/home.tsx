@@ -9,6 +9,7 @@ import {
   LogOut,
   MailQuestion,
   ShieldCheck,
+  Sparkles,
   UserPlus,
 } from "lucide-react";
 import { useState } from "react";
