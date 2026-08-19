@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { AlertTriangle, Lock, ShieldCheck } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ShieldCheck } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { IconGrid } from "@/components/imagelock/IconGrid";
@@ -9,11 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  clearAttempts,
-  getLockState,
-  recordFailedAttempt,
-} from "@/lib/imagelock/auth.functions";
 import { hashSequence, syntheticEmail } from "@/lib/imagelock/hash";
 
 export const Route = createFileRoute("/")({
@@ -37,24 +31,12 @@ export const Route = createFileRoute("/")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const lockState = useServerFn(getLockState);
-  const failAttempt = useServerFn(recordFailedAttempt);
-  const clear = useServerFn(clearAttempts);
 
   const [username, setUsername] = useState("");
   const [sequence, setSequence] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [attemptsLeft, setAttemptsLeft] = useState(3);
-  const [cooldown, setCooldown] = useState(0);
 
-  useEffect(() => {
-    if (cooldown <= 0) return;
-    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
-    return () => clearTimeout(t);
-  }, [cooldown]);
-
-  const locked = cooldown > 0;
 
   async function handleSubmit() {
     if (!username.trim() || sequence.length < 4) return;
