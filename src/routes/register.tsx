@@ -93,7 +93,7 @@ function RegisterPage() {
         toast.error(
           taken.username_taken
             ? "This username is already taken. Try another one."
-            : "This email is already registered. Log in or reset your sequence.",
+            : "This email is already registered. Please log in instead.",
         );
         return;
       }
@@ -186,7 +186,7 @@ function RegisterPage() {
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email (for recovery only)</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"

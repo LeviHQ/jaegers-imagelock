@@ -1,8 +1,5 @@
 import { z } from "zod";
 
-export const MAX_ATTEMPTS = 3;
-export const LOCK_SECONDS = 60;
-
 export const usernameSchema = z
   .string()
   .trim()
