@@ -112,29 +112,6 @@ const STEPS: Step[] = [
       "The old code is replaced immediately.",
     ],
   },
-  {
-    Icon: Lock,
-    title: "Lockout after 3 wrong tries",
-    text: "A short automatic lock stops people from guessing your pictures.",
-    points: [
-      "3 wrong sequences in a row lock the account for 60 seconds.",
-      "A red lock banner shows exactly how long is left.",
-      "This is still being finished, so it is not active on every deployment yet.",
-    ],
-    upcoming: true,
-  },
-  {
-    Icon: MailQuestion,
-    title: "Forgot your sequence? Email recovery",
-    text: "A one-time code sent to your email lets you set a new sequence.",
-    points: [
-      "Enter your email on the Forgot sequence page.",
-      "You get a 6-digit one-time code that expires quickly.",
-      "After the code is verified you pick a fresh picture sequence.",
-      "This is still being finished, so it is not active on every deployment yet.",
-    ],
-    upcoming: true,
-  },
 ];
 
 
